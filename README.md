@@ -5,10 +5,13 @@ against a database, self-corrects on failure, and explains the results in plain 
 evaluated against the [BIRD benchmark](https://bird-bench.github.io/) with a rigorous,
 reproducible comparison against a naive single-prompt baseline.
 
-**Project status:** Phases 1-4 complete (core pipeline, guardrails/retry loop, CSV
-upload/session API, BIRD evaluation harness). Frontend, observability, containerization,
-and deployment (Phases 5-8) are still in progress — this README will be extended with
-setup instructions, an architecture diagram, and a live demo link as those land.
+**Live demo:** [query-mind-kappa.vercel.app](https://query-mind-kappa.vercel.app/) — upload
+a CSV and ask it questions. Backend is on Render's free tier, so the first request after a
+period of inactivity can take ~30-60s to wake up.
+
+**Project status:** Phases 1-7 complete (core pipeline, guardrails/retry loop, CSV
+upload/session API, BIRD evaluation harness, Langfuse tracing, React frontend, Docker/CI).
+Phase 8 (README polish — architecture diagram, screenshots) is still in progress.
 
 ---
 

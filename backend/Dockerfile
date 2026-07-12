@@ -11,5 +11,7 @@ RUN pip install --no-cache-dir -e .
 
 EXPOSE 8000
 
-# --reload is fine here: this image is for local dev via docker-compose, not production.
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+# Shell form (not exec-form array) so $PORT actually expands — cloud hosts like Render
+# assign their own port via this env var; falls back to 8000 for local docker-compose use.
+# --reload is harmless in production (just an inert file watcher once the image is built).
+CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --reload
