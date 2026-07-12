@@ -1,0 +1,65 @@
+name: Eval Regression Gate
+
+# Runs the multi-agent pipeline against a small, committed CI fixture (~20 questions
+# restricted to 4 small BIRD databases — see eval/build_ci_fixtures.py) and fails the
+# build if execution accuracy drops more than 5pp below eval/results/ci_baseline.json.
+# Spec §7.5. This is a fast regression tripwire, NOT the real 150-question benchmark
+# that produced the README's headline numbers — different, smaller question set.
+#
+# Manual-only for now: no automatic trigger, so this never runs (and never spends API
+# tokens) on its own. Run it on-demand from the GitHub Actions tab ("Run workflow") once
+# eval/results/ci_baseline.json has been seeded. To re-enable automatic runs later, add
+# back a `push:` trigger block (e.g. branches: [main], paths: [backend/app/**, eval/**]).
+#
+# Prerequisites before this can actually run:
+#   1. eval/results/ci_baseline.json must exist — see eval/check_regression.py's
+#      --seed-baseline mode. Costs a small amount of real API spend; run deliberately,
+#      not automatically. Until it exists, this job fails closed with a clear message
+#      rather than a crash.
+#   2. GEMINI_API_KEY must be added under repo Settings -> Secrets and variables ->
+#      Actions.
+#   3. This repo needs to actually be a git repository with a GitHub remote — neither
+#      exists yet as of when this file was written.
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: eval-regression-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  eval-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install backend deps
+        run: pip install -e "backend[dev]"
+
+      - name: Run CI-fixture eval (multi-agent pipeline, all-Gemini)
+        run: |
+          python eval/run_multiagent_eval.py \
+            --fixtures-dir eval/ci_fixtures \
+            --model gemini-2.5-flash-lite \
+            --out eval/results/ci_run_results.json
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+
+      - name: Check for regression
+        run: |
+          python eval/check_regression.py \
+            --results eval/results/ci_run_results.json \
+            --databases-dir eval/ci_fixtures/dev_databases
+
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-eval-run-results
+          path: eval/results/ci_run_results.json
+          retention-days: 14

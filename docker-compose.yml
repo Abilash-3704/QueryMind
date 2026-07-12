@@ -1,0 +1,28 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "8010:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./backend/app:/app/app
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      # Points at the *host*-mapped backend port — the browser (not the frontend
+      # container) makes these API calls, so the Docker-internal service name
+      # ("backend") wouldn't be reachable here.
+      - VITE_API_BASE_URL=http://localhost:8010
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules

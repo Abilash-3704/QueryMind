@@ -1,0 +1,52 @@
+{
+  "execution_accuracy": {
+    "baseline": {
+      "simple": 0.68,
+      "moderate": 0.5,
+      "challenging": 0.48,
+      "overall": 0.5533333333333333
+    },
+    "multiagent": {
+      "simple": 0.56,
+      "moderate": 0.44,
+      "challenging": 0.36,
+      "overall": 0.4533333333333333
+    }
+  },
+  "valid_efficiency_score": {
+    "baseline": {
+      "simple": 63.98076211353316,
+      "moderate": 47.32050807568877,
+      "challenging": 45.85640646055102,
+      "overall": 52.38589221659098
+    },
+    "multiagent": {
+      "simple": 53.85640646055102,
+      "moderate": 41.85640646055102,
+      "challenging": 33.05255888325765,
+      "overall": 42.92179060145323
+    }
+  },
+  "secondary_stats": {
+    "baseline": {
+      "avg_retries": 0,
+      "avg_latency_ms": 1406.9566666666667,
+      "avg_input_tokens": 2303.233333333333,
+      "avg_output_tokens": 83.02,
+      "avg_cost_usd": 0.00026353133333333333,
+      "n": 150
+    },
+    "multiagent": {
+      "avg_retries": 0.36,
+      "avg_latency_ms": 8076.394666666667,
+      "avg_input_tokens": 3702.5066666666667,
+      "avg_output_tokens": 475.14,
+      "avg_cost_usd": 0.0005603066666666667,
+      "n": 150
+    }
+  },
+  "sample_size": {
+    "baseline": 150,
+    "multiagent": 150
+  }
+}
