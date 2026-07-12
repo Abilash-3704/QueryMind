@@ -15,7 +15,10 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:5173",  # local Vite dev server
+        "https://query-mind-kappa.vercel.app",  # deployed frontend
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
 )
