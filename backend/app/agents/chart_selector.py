@@ -19,18 +19,15 @@ def select_chart(rows: list[dict]) -> dict | None:
 
     cols = list(rows[0].keys())
 
-    # Only attempt a chart when we have exactly 2 columns (x + y)
     if len(cols) != 2:
         return None
 
     x_col, y_col = cols[0], cols[1]
     y_val = rows[0][y_col]
 
-    # y must be numeric
     if not isinstance(y_val, (int, float)):
         return None
 
-    # If x looks like a date/month → line chart; otherwise → bar
     first_x = str(rows[0][x_col])
     chart_type = "line" if re.search(r"\d{4}[-/]\d{2}", first_x) else "bar"
 

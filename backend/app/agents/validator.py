@@ -59,7 +59,7 @@ def run_validator(conn: duckdb.DuckDBPyConnection):
 
     def _node(state: PipelineState) -> dict[str, Any]:
         sql = state.generated_sql or ""
-        attempt = state.retry_count + 1  # human-readable attempt number
+        attempt = state.retry_count + 1
 
         if not sql:
             return {
@@ -68,7 +68,6 @@ def run_validator(conn: duckdb.DuckDBPyConnection):
                 "retry_count": state.retry_count + 1,
             }
 
-        # ── Guardrail: SELECT-only check ──────────────────────────────────
         try:
             assert_select_only(sql)
         except GuardrailError as exc:
@@ -80,7 +79,6 @@ def run_validator(conn: duckdb.DuckDBPyConnection):
                 "retry_count": state.retry_count + 1,
             }
 
-        # ── Execute ───────────────────────────────────────────────────────
         try:
             rows = execute_query(conn, sql, timeout_seconds=10)
         except Exception as exc:
@@ -92,7 +90,6 @@ def run_validator(conn: duckdb.DuckDBPyConnection):
                 "retry_count": state.retry_count + 1,
             }
 
-        # ── Sanity check: zero rows (only retry if retries remain) ────────
         if rows == [] and state.retry_count < _MAX_RETRIES - 1:
             hint = _sample_referenced_columns(sql, state.linked_schema, conn)
             hint_text = f" Actual values found in the referenced columns: {hint}." if hint else ""
@@ -106,7 +103,6 @@ def run_validator(conn: duckdb.DuckDBPyConnection):
                 "retry_count": state.retry_count + 1,
             }
 
-        # ── Success ───────────────────────────────────────────────────────
         return {
             "execution_result": rows,
             "execution_error": None,

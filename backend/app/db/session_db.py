@@ -92,10 +92,6 @@ def execute_query(
             raise TimeoutError(f"Query exceeded {timeout_seconds}s timeout: {sql[:120]}")
 
 
-# ---------------------------------------------------------------------------
-# Session store — Phase 3
-# ---------------------------------------------------------------------------
-
 SESSION_TTL_DEFAULT = 30 * 60  # 30 minutes in seconds
 
 
@@ -118,7 +114,6 @@ def _filename_to_table_name(filename: str) -> str:
     """
     stem = Path(filename).stem
     name = re.sub(r"[^A-Za-z0-9_]", "_", stem).strip("_").lower()
-    # Remove consecutive underscores
     name = re.sub(r"_+", "_", name)
     if not name:
         return "uploaded_table"

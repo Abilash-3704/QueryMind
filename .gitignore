@@ -46,3 +46,8 @@ backend/data/
 
 # --- Docker ---
 *.pid
+
+# --- Local project/session notes ---
+HANDOFF.md
+PROJECT_SPEC.md
+.claude/

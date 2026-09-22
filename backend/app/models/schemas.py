@@ -2,9 +2,6 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field
 
-# ---------------------------------------------------------------------------
-# Schema / DB models
-# ---------------------------------------------------------------------------
 
 class ColumnInfo(BaseModel):
     name: str
@@ -20,10 +17,6 @@ class TableInfo(BaseModel):
 class SchemaInfo(BaseModel):
     tables: list[TableInfo]
 
-
-# ---------------------------------------------------------------------------
-# Agent I/O models
-# ---------------------------------------------------------------------------
 
 class LinkedTableColumns(BaseModel):
     """Per-table column list — avoids dict[str, list] which Groq strict mode forbids."""
@@ -53,10 +46,6 @@ class QueryPlan(BaseModel):
     clarification_question: str | None = None
 
 
-# ---------------------------------------------------------------------------
-# Observability
-# ---------------------------------------------------------------------------
-
 class AgentStep(BaseModel):
     """One entry in the per-request trace log."""
     name: str
@@ -68,39 +57,23 @@ class AgentStep(BaseModel):
     output_summary: str | None = None
 
 
-# ---------------------------------------------------------------------------
-# Pipeline state (full schema — only a subset is populated in Phase 1)
-# ---------------------------------------------------------------------------
-
 class PipelineState(BaseModel):
     user_question: str
-
-    # Populated by session setup (Phase 1: from hardcoded Chinook)
     schema_info: SchemaInfo | None = None
 
-    # Agent outputs
     linked_schema: LinkedSchema | None = None
     query_plan: list[str] | None = None
     generated_sql: str | None = None
 
-    # Execution (Phase 1: plain executor node; Phase 2: Validator agent)
     execution_result: list[dict] | None = None
     execution_error: str | None = None
-
-    # Phase 2+
     retry_count: int = 0
 
-    # Final outputs
     final_answer: str | None = None
-    chart_spec: dict | None = None  # Phase 6
+    chart_spec: dict | None = None
 
-    # Observability
     trace_log: list[AgentStep] = Field(default_factory=list)
 
-
-# ---------------------------------------------------------------------------
-# HTTP API models — Phase 3
-# ---------------------------------------------------------------------------
 
 class UploadResponse(BaseModel):
     session_id: str

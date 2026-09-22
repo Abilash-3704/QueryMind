@@ -20,7 +20,6 @@ _BLOCKED_KEYWORDS = frozenset({
     "TRUNCATE", "EXECUTE", "COPY", "ATTACH", "DETACH", "VACUUM",
 })
 
-# Regex pattern for whole-word match (precompiled for speed)
 _BLOCKED_RE = re.compile(
     r"\b(" + "|".join(_BLOCKED_KEYWORDS) + r")\b",
     re.IGNORECASE,
@@ -46,7 +45,6 @@ def assert_select_only(sql: str) -> None:
     if not stripped:
         raise GuardrailError("Empty SQL statement.")
 
-    # ── Layer 1: sqlglot AST ──────────────────────────────────────────────
     parse_error: str | None = None
     try:
         statement = sqlglot.parse_one(stripped, dialect="duckdb")
@@ -55,14 +53,13 @@ def assert_select_only(sql: str) -> None:
                 f"Only SELECT statements are permitted; "
                 f"got {type(statement).__name__}: {stripped[:120]}"
             )
-        return  # passed — exit early
+        return
     except GuardrailError:
         raise
     except Exception as exc:
         # sqlglot failed to parse — note the error, fall through to fallback
         parse_error = str(exc)
 
-    # ── Layer 2: keyword fallback ─────────────────────────────────────────
     upper = stripped.upper().lstrip()
     if not (upper.startswith("SELECT") or upper.startswith("WITH")):
         raise GuardrailError(

@@ -81,7 +81,7 @@ def run_schema_linker(
         input_tokens=resp.input_tokens,
         output_tokens=resp.output_tokens,
         input_summary=user_msg[:400].replace("\n", " "),
-        output_summary=f"tables={linked.tables}",  # uses .tables property
+        output_summary=f"tables={linked.tables}",
     )
     return {
         "linked_schema": linked,
